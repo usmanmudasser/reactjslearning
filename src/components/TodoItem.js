@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 
 class TodoItem extends Component
 {
-
-   
     getStyle=() =>
     {
         return {
@@ -43,9 +41,12 @@ const btnStyle = {
     float:'right'
 
 }
-//PropTypes
-TodoItem.propTypes= {
-    todo:PropTypes.object.isRequired
+
+// PropTypes
+TodoItem.propTypes = {
+    todo: PropTypes.object.isRequired,
+    markComplete: PropTypes.func.isRequired,
+    delTodo: PropTypes.func.isRequired,
   }
 
 //   const itemStyle = {

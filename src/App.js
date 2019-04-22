@@ -1,35 +1,53 @@
 import React, { Component } from 'react';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
+import Header from './components/layout/Header';
 import Todos from './components/Todos';
+import AddTodo from './components/AddTodo';
+import About from './components/pages/About';
+import axios from 'axios';
+//import uuid from 'uuid';
 import './App.css';
 
 class App extends Component {
+
+  //we use jsonplaceholder fake api for development purpose
+  
   state={
     todos: [
-         {
-             id:1,
-             title:'clean the trash',
-             completed:false
-         },
-         {
-             id:2,
-             title:'dinner with friends',
-             completed:false
-         },
-         {
-             id:3,
-             title:'meeting with boss',
-             completed:false
-         }
+        //  {
+        //      id:uuid.v4(),
+        //      title:'clean the trash',
+        //      completed:false
+        //  },
+        //  {
+        //      id:uuid.v4(),
+        //      title:'dinner with friends',
+        //      completed:false
+        //  },
+        //  {
+        //      id:uuid.v4(),
+        //      title:'meeting with boss',
+        //      completed:false
+        //  }
      ]
  }
+ 
+ componentDidMount() {
+  axios.get('https://jsonplaceholder.typicode.com/todos?_limit=10')
+    .then(res => this.setState({ todos: res.data }))
+}
+ 
 
  deleteTodo=(id)=>
  {
     //... three dots is known as spread operator
-    this.setState({
-      todos: [...this.state.todos.filter(todo=>todo.id !== id)]
-    })
+    // this.setState({
+    //   todos: [...this.state.todos.filter(todo=>todo.id !== id)]
+    // })
     
+    axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+    .then(res => this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] }));
+
  }
  //toggle complete
  markComplete=(id)=>
@@ -42,17 +60,52 @@ class App extends Component {
           }
           return todo;
         })
-      })
+      });
    }
 
+   AddTodo = (title)=>
+   {
+    //  const newTodo = {
+    //    id:uuid.v4(),
+    //    //title:title, // syntax example below
+    //    title,
+    //    completed:false
+    //  }
+    //   //spread opeartor
+    //   this.setState({
+    //     todos: [...this.state.todos,newTodo]
+    //   });
+
+    axios.post('https://jsonplaceholder.typicode.com/todos', {
+      title,
+      completed: false
+    })
+      .then(res => this.setState({ todos: [...this.state.todos, res.data] }));
+
+   }
 
   render() {
    
     return (
-      <div className="App">
-          <Todos todos={this.state.todos} markComplete={this.markComplete} deleteTodo={this.deleteTodo} ></Todos>
-      </div>
-      
+      <Router>
+          <div className="App">
+            <div className="container">
+            <Route exact path="/" render={props => (
+                <React.Fragment>
+                  <Header/>
+                  <AddTodo AddTodo={this.AddTodo}/>
+                  <Todos todos={this.state.todos} markComplete={this.markComplete} deleteTodo={this.deleteTodo} ></Todos>
+                </React.Fragment>
+            )}>
+            </Route>
+              
+              <Route path="/about" component={About}>
+
+              </Route>
+            </div>
+        
+          </div>
+      </Router>
     );
   }
 }
